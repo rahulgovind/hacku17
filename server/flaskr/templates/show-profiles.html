@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+    {% if profiles|length == 0 %}
+        No profiles uploaded yet
+    {% else %}
+        {% for profile in profiles %}
+            <h3>{{ profile.name }}</h3>
+            <div class="keywords-list">
+                {% for keyword in profile.keyword_list %}
+                    <span>{{ keyword }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

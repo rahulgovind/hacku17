@@ -1,4 +1,8 @@
-### https://raw.github.com/github/gitignore/94d87c504178b3a4e8b95eb95e78e96c6ccefe46/Python.gitignore
+
+*.idea/*
+server/.idea*
+*.pyc
+*egg-info*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -91,5 +95,3 @@ ENV/
 
 # Rope project settings
 .ropeproject
-
-
