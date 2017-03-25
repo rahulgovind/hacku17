@@ -49,7 +49,7 @@ def get_related_links(title):
     return links
 
 
-def get_related_topics(title, levels=1):
+def get_related_topics(title, levels=2):
     logging.info("Get Related Topics: " + title)
     results_level = get_related_links(title)
     logging.info("Related Topics: " + str(len(results_level)))

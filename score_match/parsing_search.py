@@ -3,6 +3,8 @@ from wikipedia_scraper.wikipedia_scraper import get_topics_given_profiles
 import re
 import textract
 
+profile_dict = None
+
 def convert_pdf_to_text(pdf_file_location):
     """
         Convert pdf file to text using textract
@@ -62,16 +64,29 @@ def main_score(profile_and_key_words, pdf_file_name):
     pdf_text = convert_pdf_to_text(pdf_file_name)
     pdf_text = remove_useless_ascii(pdf_text)
 
-    profile_dict = get_topics_given_profiles(profile_and_key_words)
-
     pre_score = get_pre_score(profile_dict, pdf_text)
     final_score = get_score(pre_score)
 
     return final_score
 
+
+def process_resumes_in_bulk(profile, files):
+    for f in files:
+        print f, main_score(profile, f)
+
 if __name__ == '__main__':
     ## Testing
-    file_name = 'tests/resumes/Anmol_Resume.pdf'
+    file_names = [
+            'tests/resumes/Anmol_Resume.pdf',
+            'tests/resumes/resume_1.pdf',
+            'tests/resumes/resume_2.pdf',
+            'tests/resumes/resume_3.pdf',
+            'tests/resumes/resume_4.pdf',
+            'tests/resumes/resume_5.pdf',
+            'tests/resumes/resume_6.pdf',
+            'tests/resumes/resume_7.pdf'
+        ]
     p = {"Machine Learning": ["Machine Learning", "Artificial Neural Networks"], "Cryptography": ["Encryption", "cipher", 'NIST']}
-    s = main_score(p, file_name)
-    print s
+    profile_dict = get_topics_given_profiles(p)
+    process_resumes_in_bulk(p, file_names)
+    # s = main_score(p, file_name)
