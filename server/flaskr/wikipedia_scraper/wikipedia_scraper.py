@@ -2,7 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 import redis
 import logging
-
+import json
+from slugify import slugify
 
 logging.basicConfig(filename='scraper.log', level=logging.DEBUG)
 rdis = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -18,13 +19,31 @@ def is_ascii(s):
     return True
 
 
+def redis_get_key(title):
+    return 'wiki:' + title
+
+
+def redis_has_title(title):
+    return rdis.exists(redis_get_key(title))
+
+
+def redis_set_title(title, data):
+    rdis.set(redis_get_key(title), json.dumps(data))
+
+
+def redis_get_title(title):
+    assert rdis.exists(redis_get_key(title))
+    print 'redis_get_title', redis_get_key(title)
+    return json.loads(rdis.get(redis_get_key(title)))
+
+
 def get_related_links(title):
     logging.info("Get Related Links: " + title)
     # Check if data is present in the Redis Database
-    stored_data = rdis.lrange(title, 0, -1)
-    if stored_data is not None and len(stored_data) > 1:
+
+    if redis_has_title(title):
         logging.info("HIT: " + title)
-        return [link.decode("utf-8") for link in stored_data]
+        return redis_get_title(title)
 
     # Fetch Data and store it in the Database
     logging.info("MISS: " + title)
@@ -44,7 +63,7 @@ def get_related_links(title):
             if link_title is not None and is_ascii(link_title) and link_title not in blacklist:
                 links.append(link.get("title").lower())
     if len(links) > 1:
-        rdis.lpush(title.lower(), *links)
+        redis_set_title(title, links)
 
     return links
 
@@ -63,7 +82,7 @@ def get_related_topics(title, levels=1):
         topics[result] = 1
 
     for result in results_level:
-        lower_topics = get_related_topics(result, levels-1)
+        lower_topics = get_related_topics(result, levels - 1)
         topics = merge_two_topics(topics, lower_topics)
 
     return topics.items()
@@ -94,5 +113,6 @@ def get_topics_given_profiles(profiles):
 
 
 if __name__ == '__main__':
-    profiles = {"Machine Learning": ["Machine Learning", "Artificial Neural Networks"], "Cryptography": ["Encryption", "Decryption"]}
+    profiles = {"Machine Learning": ["Machine Learning", "Artificial Neural Networks"],
+                "Cryptography": ["Encryption", "Decryption"]}
     get_topics_given_profiles(profiles)

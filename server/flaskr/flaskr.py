@@ -9,6 +9,7 @@ from numpy.random import randint, rand
 import json
 from score_match.parsing_search import main_score
 import score_match
+import re
 
 ALLOWED_EXTENSIONS = ['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif']
 UPLOAD_FOLDER = '/tmp'
@@ -41,6 +42,13 @@ def create_app(migrate=False):
 app = create_app()
 
 
+def get_session_identifier(file_path, key):
+    result = os.path.splitext(os.path.basename(file_path))[0]
+    result = re.sub(key, "", result)
+    print 'SI: ', result
+    return result
+
+
 def get_session_files_key(key):
     return 'files-' + key
 
@@ -60,7 +68,6 @@ def get_profile_dict():
     return result
 
 
-
 def get_analysis(resume_file_name):
     profile_dict = get_profile_dict()
     print profile_dict
@@ -68,13 +75,14 @@ def get_analysis(resume_file_name):
     return result
 
 
-def get_analyses(resume_file_names):
+def get_analyses(resume_file_names, file_session_key):
     id = 1
     result = []
     for file_name in resume_file_names:
         result_here = {
             'id': id,
-            'scores': get_analysis(file_name)
+            'scores': get_analysis(file_name),
+            'title': get_session_identifier(file_name, file_session_key)
         }
 
         result_here['score_keys'] = json.dumps(result_here['scores'].keys())
@@ -127,12 +135,11 @@ def analyze():
     file_names = session[get_session_files_key(file_session_key)]
     if get_session_files_key(file_session_key) in session:
         files = session[get_session_files_key(file_session_key)]
-        return render_template("show-analysis.html", files=files, analyses=get_analyses(file_names))
+        return render_template("show-analysis.html", files=files, analyses=get_analyses(file_names, file_session_key))
 
 
 @app.route('/create-profile', methods=['GET', 'POST'])
 def create_profile():
-    score_match.parsing_search.setup(get_profile_dict())
     if request.method == 'GET':
         return render_template('create-profile.html')
     else:
