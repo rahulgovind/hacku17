@@ -15,7 +15,7 @@
     <div class="box-success">Done!</div>
     <div class="box-error">Error! <span></span>.</div>
 </form>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <script>
 
     var advancedUploadAvailable = function () {
@@ -40,8 +40,9 @@
         }
 
         var showFiles = function () {
-            var files_form = fileListToArray($input[0].files);
-            var files = files_form.concat(droppedFiles);
+            var files= fileListToArray($input[0].files);
+            if(droppedFiles !== false)
+                files = files.concat(droppedFiles);
 
             $label.text(files.length > 1 ? ($input.attr('data-multiple-caption') || '').replace('{count}', files.length) : files[0].name);
         };

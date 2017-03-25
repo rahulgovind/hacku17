@@ -1,5 +1,11 @@
-body, html {
+html {
     height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .navbar {
@@ -108,4 +114,8 @@ svg {
     box-shadow: 1px 1px 3px #777;
     display: inline-block;
     min-width: 100px;
+}
+
+.analysis-chart *{
+    color: white;
 }

@@ -1,7 +1,37 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h3>Files: </h3>
-    {% for file in files %}
-        <span>{{ file }}</span>
-    {% endfor %}
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.4/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.3/Chart.bundle.min.js"></script>
+<script>
+    Chart.defaults.global.defaultFontColor = "#fff";
+    hart.defaults.global.legend.display = false;
+    Chart.defaults.global.tooltips.enabled = false;
+</script>
+{% for analysis in analyses %}
+
+<canvas class="analysis-chart" id="analysis-chart-{{ analysis['id'] }}" height="100"></canvas>
+<script>
+    var ctx = $("#analysis-chart-{{ analysis['id'] }}");
+    var data = {
+        labels: {{ analysis['scores'].keys()|tojson|safe }},
+        datasets: [
+            {
+                label: "{{ analysis['id'] }}",
+                borderWidth: 1,
+                fillColor: "rgba(180, 77, 87, 0.2)",
+                backgroundColor: "rgba(75,192,192,0.4)",
+                data: {{ analysis['scores'].values()|tojson|safe }}
+            }
+        ]
+    };
+
+    var myBarChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: data,
+        scaleFontColor: "#FFFFFF"
+    });
+</script>
+{% endfor %}
 {% endblock %}
