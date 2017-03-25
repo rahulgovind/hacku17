@@ -31,6 +31,7 @@ def get_pre_score(profile_dict, pdf_text):
     for profile_name, word_list in profile_dict.iteritems():
         temp_result = {}
         for word, word_rank in word_list:
+            word = ''.join(i.lower() for i in word if i.isalpha() or i == ' ')
             temp_count = len(re.compile(r'\b%s\b' % word, flags=re.IGNORECASE).findall(pdf_text))
             temp_result[word] = (temp_count, word_rank)
         result[profile_name] = temp_result
