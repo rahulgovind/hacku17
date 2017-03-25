@@ -35,7 +35,7 @@ def get_pre_score(profile_dict, pdf_text):
             temp_count = len(re.compile(r'\b%s\b' % word, flags=re.IGNORECASE).findall(pdf_text))
             temp_result[word] = (temp_count, word_rank)
         result[profile_name] = temp_result
-    print 'pre score -> ', result
+    # print 'pre score -> ', result
     return result
 
 def get_score(pre_score):
@@ -46,13 +46,13 @@ def get_score(pre_score):
     for profile_name, value in pre_score.iteritems():
         score_for_profile = 0
         total_rank = 0
-        
+
         for word, (count,rank) in value.iteritems():
             score_for_profile += (count*rank)
             total_rank += rank
-        
+
         final_score[profile_name] = score_for_profile/total_rank
-    
+
     return final_score
 
 def main_score(profile_and_key_words, pdf_file_name):
@@ -61,9 +61,9 @@ def main_score(profile_and_key_words, pdf_file_name):
     """
     pdf_text = convert_pdf_to_text(pdf_file_name)
     pdf_text = remove_useless_ascii(pdf_text)
-    
+
     profile_dict = get_topics_given_profiles(profile_and_key_words)
-    
+
     pre_score = get_pre_score(profile_dict, pdf_text)
     final_score = get_score(pre_score)
 
@@ -71,11 +71,7 @@ def main_score(profile_and_key_words, pdf_file_name):
 
 if __name__ == '__main__':
     ## Testing
-    file_name = 'sample_resume/Anmol_Resume.pdf'
-    t = convert_pdf_to_text(file_name)
-    t = remove_useless_ascii(t)
-
-    print type(t)
-    p = {'machine learning' : [('knn', 2), ('k-means', 4), ('svm', 10), ('machine learning', 15)], 'cryptography' : [('cryptography', 10), ('aes', 8), ('ciphers', 15)]}
-    s = get_score(get_pre_score(p, t))
+    file_name = 'tests/resumes/resume_1.pdf'
+    p = {"Machine Learning": ["Machine Learning", "Artificial Neural Networks"], "Cryptography": ["Encryption"]}
+    s = main_score(p, file_name)
     print s
