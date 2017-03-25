@@ -7,6 +7,7 @@ from models.models import db, Profile
 from werkzeug.utils import secure_filename
 from numpy.random import randint, rand
 import json
+from score_match.parsing_search import main_score
 
 ALLOWED_EXTENSIONS = ['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif']
 UPLOAD_FOLDER = '/tmp'
@@ -42,7 +43,7 @@ def get_session_files_key(key):
     return 'files-' + key
 
 
-def main_score(profile_dict, resume_file_name):
+def faker_main_score(profile_dict, resume_file_name):
     result = {}
     for key in profile_dict.keys():
         result[key] = rand()
