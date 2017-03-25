@@ -3,6 +3,8 @@ from wikipedia_scraper.wikipedia_scraper import get_topics_given_profiles
 import re
 import textract
 
+profile_dict = None
+
 def convert_pdf_to_text(pdf_file_location):
     """
         Convert pdf file to text using textract
@@ -31,10 +33,11 @@ def get_pre_score(profile_dict, pdf_text):
     for profile_name, word_list in profile_dict.iteritems():
         temp_result = {}
         for word, word_rank in word_list:
-            temp_count = len(re.compile(r'\b%s\b' % word, flags=re.IGNORECASE).findall(pdf_text))
+            temp_word = ''.join(i.lower() for i in word if i.isalpha() or i == ' ')
+            temp_count = len(re.compile(r'\b%s\b' % temp_word, flags=re.IGNORECASE).findall(pdf_text))
             temp_result[word] = (temp_count, word_rank)
         result[profile_name] = temp_result
-    print 'pre score -> ', result
+    # print 'pre score -> ', result
     return result
 
 def get_score(pre_score):
@@ -45,13 +48,13 @@ def get_score(pre_score):
     for profile_name, value in pre_score.iteritems():
         score_for_profile = 0
         total_rank = 0
-        
+
         for word, (count,rank) in value.iteritems():
             score_for_profile += (count*rank)
             total_rank += rank
-        
-        final_score[profile_name] = score_for_profile/total_rank
-    
+
+        final_score[profile_name] = score_for_profile/float(total_rank)
+
     return final_score
 
 def main_score(profile_and_key_words, pdf_file_name):
@@ -60,21 +63,30 @@ def main_score(profile_and_key_words, pdf_file_name):
     """
     pdf_text = convert_pdf_to_text(pdf_file_name)
     pdf_text = remove_useless_ascii(pdf_text)
-    
-    profile_dict = get_topics_given_profiles(profile_and_key_words)
-    
+
     pre_score = get_pre_score(profile_dict, pdf_text)
     final_score = get_score(pre_score)
 
     return final_score
 
+
+def process_resumes_in_bulk(profile, files):
+    for f in files:
+        print f, main_score(profile, f)
+
 if __name__ == '__main__':
     ## Testing
-    file_name = 'sample_resume/Anmol_Resume.pdf'
-    t = convert_pdf_to_text(file_name)
-    t = remove_useless_ascii(t)
-
-    print type(t)
-    p = {'machine learning' : [('knn', 2), ('k-means', 4), ('svm', 10), ('machine learning', 15)], 'cryptography' : [('cryptography', 10), ('aes', 8), ('ciphers', 15)]}
-    s = get_score(get_pre_score(p, t))
-    print s
+    file_names = [
+            'tests/resumes/Anmol_Resume.pdf',
+            'tests/resumes/resume_1.pdf',
+            'tests/resumes/resume_2.pdf',
+            'tests/resumes/resume_3.pdf',
+            'tests/resumes/resume_4.pdf',
+            'tests/resumes/resume_5.pdf',
+            'tests/resumes/resume_6.pdf',
+            'tests/resumes/resume_7.pdf'
+        ]
+    p = {"Machine Learning": ["Machine Learning", "Artificial Neural Networks"], "Cryptography": ["Encryption", "cipher", 'NIST']}
+    profile_dict = get_topics_given_profiles(p)
+    process_resumes_in_bulk(p, file_names)
+    # s = main_score(p, file_name)

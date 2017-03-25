@@ -1,11 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 import redis
-import pprint
 import logging
 
 
-pp = pprint.PrettyPrinter(indent=4)
 logging.basicConfig(filename='scraper.log', level=logging.DEBUG)
 rdis = redis.StrictRedis(host='localhost', port=6379, db=0)
 
@@ -13,7 +11,11 @@ blacklist = ['Wikipedia:Citation needed', 'Help:IPA for English', 'Help:Pronunci
 
 
 def is_ascii(s):
-    return len(s) == len(s.encode())
+    try:
+        len(s) == len(s.encode())
+    except UnicodeEncodeError:
+        return False
+    return True
 
 
 def get_related_links(title):
@@ -40,9 +42,9 @@ def get_related_links(title):
         for link in paragraph.find_all('a'):
             link_title = link.get("title")
             if link_title is not None and is_ascii(link_title) and link_title not in blacklist:
-                links.append(link.get("title"))
+                links.append(link.get("title").lower())
     if len(links) > 1:
-        rdis.lpush(title, *links)
+        rdis.lpush(title.lower(), *links)
 
     return links
 
@@ -58,7 +60,7 @@ def get_related_topics(title, levels=2):
     topics = {}
 
     for result in results_level:
-        topics[result] = 1
+        topics[result] = levels * 3
 
     for result in results_level:
         lower_topics = get_related_topics(result, levels-1)
