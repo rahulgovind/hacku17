@@ -31,8 +31,8 @@ def get_pre_score(profile_dict, pdf_text):
     for profile_name, word_list in profile_dict.iteritems():
         temp_result = {}
         for word, word_rank in word_list:
-            word = ''.join(i.lower() for i in word if i.isalpha() or i == ' ')
-            temp_count = len(re.compile(r'\b%s\b' % word, flags=re.IGNORECASE).findall(pdf_text))
+            temp_word = ''.join(i.lower() for i in word if i.isalpha() or i == ' ')
+            temp_count = len(re.compile(r'\b%s\b' % temp_word, flags=re.IGNORECASE).findall(pdf_text))
             temp_result[word] = (temp_count, word_rank)
         result[profile_name] = temp_result
     # print 'pre score -> ', result
@@ -51,7 +51,7 @@ def get_score(pre_score):
             score_for_profile += (count*rank)
             total_rank += rank
 
-        final_score[profile_name] = score_for_profile/total_rank
+        final_score[profile_name] = score_for_profile/float(total_rank)
 
     return final_score
 
@@ -71,7 +71,7 @@ def main_score(profile_and_key_words, pdf_file_name):
 
 if __name__ == '__main__':
     ## Testing
-    file_name = 'tests/resumes/resume_1.pdf'
-    p = {"Machine Learning": ["Machine Learning", "Artificial Neural Networks"], "Cryptography": ["Encryption"]}
+    file_name = 'tests/resumes/Anmol_Resume.pdf'
+    p = {"Machine Learning": ["Machine Learning", "Artificial Neural Networks"], "Cryptography": ["Encryption", "cipher", 'NIST']}
     s = main_score(p, file_name)
     print s

@@ -60,7 +60,7 @@ def get_related_topics(title, levels=1):
     topics = {}
 
     for result in results_level:
-        topics[result] = 1
+        topics[result] = levels * 3
 
     for result in results_level:
         lower_topics = get_related_topics(result, levels-1)
