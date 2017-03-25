@@ -3,7 +3,7 @@ html {
 }
 
 body {
-    height: 100%;
+    min-height: 100%;
     margin: 0;
     padding: 0;
 }
@@ -13,7 +13,7 @@ body {
 }
 
 .page {
-    height: 100%;
+    min-height: 100vh;
     background: rgba(0,0,0,0) linear-gradient(to left bottom,#005d81,#6659a2) repeat scroll 0 0;
     color: white;
 }

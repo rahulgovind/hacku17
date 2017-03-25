@@ -49,7 +49,7 @@ def get_related_links(title):
     return links
 
 
-def get_related_topics(title, levels=2):
+def get_related_topics(title, levels=1):
     logging.info("Get Related Topics: " + title)
     results_level = get_related_links(title)
     logging.info("Related Topics: " + str(len(results_level)))
@@ -60,7 +60,7 @@ def get_related_topics(title, levels=2):
     topics = {}
 
     for result in results_level:
-        topics[result] = levels * 3
+        topics[result] = 1
 
     for result in results_level:
         lower_topics = get_related_topics(result, levels-1)

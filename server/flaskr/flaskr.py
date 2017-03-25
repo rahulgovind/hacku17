@@ -8,9 +8,11 @@ from werkzeug.utils import secure_filename
 from numpy.random import randint, rand
 import json
 from score_match.parsing_search import main_score
+import score_match
 
 ALLOWED_EXTENSIONS = ['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif']
 UPLOAD_FOLDER = '/tmp'
+
 
 
 def create_app(migrate=False):
@@ -58,8 +60,10 @@ def get_profile_dict():
     return result
 
 
+
 def get_analysis(resume_file_name):
     profile_dict = get_profile_dict()
+    print profile_dict
     result = main_score(profile_dict, resume_file_name)
     return result
 
@@ -83,6 +87,7 @@ def get_analyses(resume_file_names):
 
 @app.route('/', methods=['GET', 'POST'])
 def show_hello_world():
+
     if request.method == 'GET':
         return render_template("home.html", file_session=randint(1, int(1e9)))
     else:
@@ -127,6 +132,7 @@ def analyze():
 
 @app.route('/create-profile', methods=['GET', 'POST'])
 def create_profile():
+    score_match.parsing_search.setup(get_profile_dict())
     if request.method == 'GET':
         return render_template('create-profile.html')
     else:
@@ -144,3 +150,4 @@ def create_profile():
 def show_profiles():
     profiles = Profile.query.all()
     return render_template("show-profiles.html", profiles=profiles)
+

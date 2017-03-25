@@ -6,7 +6,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.3/Chart.bundle.min.js"></script>
 <script>
     Chart.defaults.global.defaultFontColor = "#fff";
-    hart.defaults.global.legend.display = false;
+    Chart.defaults.global.legend.display = false;
     Chart.defaults.global.tooltips.enabled = false;
 </script>
 {% for analysis in analyses %}
@@ -30,7 +30,18 @@
     var myBarChart = new Chart(ctx, {
         type: 'horizontalBar',
         data: data,
-        scaleFontColor: "#FFFFFF"
+        scaleFontColor: "#FFFFFF",
+        options: {
+            scales: {
+                xAxes: [{
+                    display: true,
+                    ticks: {
+                        suggestedMin: 0.0,
+                        suggestedMax: 1.0
+                    }
+                }]
+            }
+        }
     });
 </script>
 {% endfor %}

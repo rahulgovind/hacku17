@@ -66,10 +66,10 @@ def main_score(profile_and_key_words, pdf_file_name):
     """
         Input is of the form {'profile_1' : [key words], 'profile_2' : [key_words]}
     """
-    print pdf_file_name
     pdf_text = convert_pdf_to_text(pdf_file_name)
     pdf_text = remove_useless_ascii(pdf_text)
 
+    profile_dict = get_topics_given_profiles(profile_and_key_words)
     pre_score = get_pre_score(profile_dict, pdf_text)
     final_score = get_score(pre_score)
 
@@ -95,6 +95,6 @@ if __name__ == '__main__':
     ]
     p = {"Machine Learning": ["Machine Learning", "Artificial Neural Networks"],
          "Cryptography": ["Encryption", "cipher", 'NIST']}
-    profile_dict = get_topics_given_profiles(p)
+
     process_resumes_in_bulk(p, file_names)
     # s = main_score(p, file_name)
