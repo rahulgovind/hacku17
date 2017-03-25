@@ -1,3 +1,5 @@
+from wikipedia_scraper.wikipedia_scraper import get_topics_given_profiles
+
 import re
 import textract
 
