@@ -157,6 +157,9 @@ def create_profile():
         db.session.commit()
 
         flash("The '%s' profile was submitted successfully!" % name)
+
+        score_match.parsing_search.setup(get_profile_dict())
+
         return redirect(request.url)
         #return "%s<br/>%s<h2>Successful</h2>" % (name, keywords)
 

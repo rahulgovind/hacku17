@@ -69,6 +69,11 @@ def get_score(pre_score):
     return final_score
 
 
+def setup(profile_and_key_words):
+    global profile_dict
+    profile_dict = get_topics_given_profiles(profile_and_key_words)
+
+
 def main_score(profile_and_key_words, pdf_file_name):
     """
         Input is of the form {'profile_1' : [key words], 'profile_2' : [key_words]}
@@ -76,7 +81,9 @@ def main_score(profile_and_key_words, pdf_file_name):
     pdf_text = convert_pdf_to_text(pdf_file_name)
     pdf_text = remove_useless_ascii(pdf_text)
 
-    profile_dict = get_topics_given_profiles(profile_and_key_words)
+    if profile_dict is None:
+        setup(profile_and_key_words)
+
     pre_score = get_pre_score(profile_dict, pdf_text)
     final_score = get_score(pre_score)
 
