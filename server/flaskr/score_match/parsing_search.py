@@ -1,6 +1,7 @@
 from ..wikipedia_scraper.wikipedia_scraper import get_topics_given_profiles
 
 import re
+import math
 import textract
 
 profile_dict = None
@@ -48,18 +49,22 @@ def get_score(pre_score):
     """
         Get score which is sumation(frequency * word_rank)/summation(word_rank)
     """
-    import math
-
     final_score = {}
+    total_count = []
+    
     for profile_name, value in pre_score.iteritems():
         score_for_profile = 0
         total_rank = []
 
         for word, (count, rank) in value.iteritems():
-            score_for_profile += (math.log(count,2) * rank)
+            score_for_profile += (count * rank)
             total_rank.append(rank)
+            total_count.append(count)
 
-        final_score[profile_name] = score_for_profile / float(max(total_rank))
+        final_score[profile_name] = score_for_profile / (float(max(total_rank)))
+    
+    for key, value in final_score.iteritems():
+        final_score[key] = value/float(sum(total_count)) 
 
     return final_score
 
