@@ -48,16 +48,18 @@ def get_score(pre_score):
     """
         Get score which is sumation(frequency * word_rank)/summation(word_rank)
     """
+    import math
+
     final_score = {}
     for profile_name, value in pre_score.iteritems():
         score_for_profile = 0
-        total_rank = 0
+        total_rank = []
 
         for word, (count, rank) in value.iteritems():
-            score_for_profile += (count * rank)
-            total_rank += rank
+            score_for_profile += (math.log(count,2) * rank)
+            total_rank.append(rank)
 
-        final_score[profile_name] = score_for_profile / float(total_rank)
+        final_score[profile_name] = score_for_profile / float(max(total_rank))
 
     return final_score
 
