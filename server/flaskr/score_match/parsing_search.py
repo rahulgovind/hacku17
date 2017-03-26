@@ -56,7 +56,7 @@ def get_score(pre_score):
         total_rank = []
 
         for word, (count, rank) in value.iteritems():
-            score_for_profile += (math.log(count,2) * rank)
+            score_for_profile += (count * rank)
             total_rank.append(rank)
 
         final_score[profile_name] = score_for_profile / float(max(total_rank))

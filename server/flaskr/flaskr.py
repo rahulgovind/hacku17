@@ -83,10 +83,16 @@ def get_analyses(resume_file_names, file_session_key):
             'title': get_session_identifier(file_name, file_session_key)
         }
 
-        result_here['score_keys'] = json.dumps(result_here['scores'].keys())
-        result_here['score_values'] = json.dumps(result_here['scores'].values())
         id += 1
         result.append(result_here)
+
+    max_score = 0
+    for row in result:
+        max_score = max(max_score, max(row['scores'].values()))
+
+    for row in result:
+        for key in row['scores'].keys():
+            row['scores'][key] = row['scores'][key] / max_score
 
     return result
 
