@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, get_flashed_messages
 from flask import request, session
 from middleware.StreamConsumingMiddleware import StreamConsumingMiddleware
 from models.models import db, Profile
@@ -15,7 +15,6 @@ ALLOWED_EXTENSIONS = ['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif']
 UPLOAD_FOLDER = '/tmp'
 
 
-
 def create_app(migrate=False):
     app = Flask(__name__)  # create the application instance :)
     app.wsgi_app = StreamConsumingMiddleware(app.wsgi_app)
@@ -26,12 +25,11 @@ def create_app(migrate=False):
 
     db.init_app(app)
 
-    if migrate:
-        with app.app_context():
-            # Extensions like Flask-SQLAlchemy now know what the "current" app
-            # is while within this block. Therefore, you can now run........
-            print "Migrating"
-            db.create_all()
+    with app.app_context():
+        # Extensions like Flask-SQLAlchemy now know what the "current" app
+        # is while within this block. Therefore, you can now run........
+        print "Migrating"
+        db.create_all()
     # app.config.from_object(__name__) # load config from this file , flaskr.py
     # app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
@@ -141,7 +139,9 @@ def analyze():
 @app.route('/create-profile', methods=['GET', 'POST'])
 def create_profile():
     if request.method == 'GET':
-        return render_template('create-profile.html')
+        messages = get_flashed_messages()
+        print messages
+        return render_template('create-profile.html', messages=messages)
     else:
         name = request.form['name']
         keywords = request.form['keywords']
@@ -150,7 +150,9 @@ def create_profile():
         db.session.add(profile)
         db.session.commit()
 
-        return "%s<br/>%s<h2>Successful</h2>" % (name, keywords)
+        flash("The '%s' profile was submitted successfully!" % name)
+        return redirect(request.url)
+        #return "%s<br/>%s<h2>Successful</h2>" % (name, keywords)
 
 
 @app.route('/show-profiles')
